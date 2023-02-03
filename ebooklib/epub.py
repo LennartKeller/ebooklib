@@ -1415,8 +1415,15 @@ class EpubReader(object):
 
     def read_file(self, name):
         # Raises KeyError
-        name = zip_path.normpath(name)
-        return self.zf.read(name)
+        if self.options.get("merciful", False):
+            try:
+                name = zip_path.normpath(name)
+                return self.zf.read(name)
+            except KeyError:
+                return b""
+        else:
+            name = zip_path.normpath(name)
+            return self.zf.read(name)
 
     def _load_container(self):
         meta_inf = self.read_file('META-INF/container.xml')
